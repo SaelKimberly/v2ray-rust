@@ -16,7 +16,7 @@ fn main() {
     protobuf_codegen::Codegen::new()
         .out_dir("src/")
         .customize(customize)
-        .inputs(&["src/config/geoip.proto", "src/config/geosite.proto"])
+        .inputs(["src/config/geoip.proto", "src/config/geosite.proto"])
         .include(".")
         .out_dir("src/config/")
         .run()

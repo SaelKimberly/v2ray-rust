@@ -141,11 +141,11 @@ fn decrypt_payload_aead(
     let mut cipher = AeadCipher::new(method, key, salt);
 
     if data.len() < tag_len {
-        return Err(Error::new(ErrorKind::Other, "udp packet too short for tag"));
+        return Err(Error::other("udp packet too short for tag"));
     }
 
     if !cipher.decrypt(data) {
-        return Err(Error::new(ErrorKind::Other, "invalid tag-in"));
+        return Err(Error::other("invalid tag-in"));
     }
 
     // Truncate TAG
