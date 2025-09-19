@@ -1,6 +1,6 @@
 #[macro_export]
 macro_rules! md5 {
-    ($($x:expr),*) => {{
+    ($($x:expr_2021),*) => {{
         use md5::{Md5, Digest};
         let mut digest = Md5::new();
         $(digest.update($x);)*

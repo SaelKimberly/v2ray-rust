@@ -52,7 +52,7 @@ pub fn show_utf8_lossy(bs: &[u8]) -> String {
 #[cfg(debug_assertions)]
 #[macro_export]
 macro_rules! debug_log {
-    ($( $args:expr ),*) => { {use log::debug;debug!( $( $args ),* ); }}
+    ($( $args:expr_2021 ),*) => { {use log::debug;debug!( $( $args ),* ); }}
 }
 
 #[cfg(not(debug_assertions))]

@@ -8,7 +8,7 @@ use std::net::{SocketAddr, TcpListener};
 use std::os::unix::io::AsRawFd;
 
 macro_rules! syscall {
-    ($fn: ident ( $($arg: expr),* $(,)* ) ) => {{
+    ($fn: ident ( $($arg: expr_2021),* $(,)* ) ) => {{
         #[allow(unused_unsafe)]
         let res = unsafe { libc::$fn($($arg, )*) };
         if res == -1 {

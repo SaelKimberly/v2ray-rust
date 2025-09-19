@@ -274,7 +274,7 @@ impl std::ops::Index<(ProtocolType, usize)> for Config {
 }
 
 macro_rules! insert_config_map {
-    ($name:expr,$map:tt) => {{
+    ($name:expr_2021,$map:tt) => {{
         for (idx, s) in $name.iter().enumerate() {
             $map.insert(s.tag.as_str(), (s.get_protocol_type(), idx));
         }

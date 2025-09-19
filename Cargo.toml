@@ -1,6 +1,6 @@
 [package]
 authors = ["darsvador"]
-edition = "2021"
+edition = "2024"
 exclude = ["./test_config.toml"]
 name = "v2ray-rust"
 version = "0.1.0"

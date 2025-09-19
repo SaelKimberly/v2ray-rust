@@ -386,7 +386,7 @@ impl Router {
                     res
                 };
             }
-            Address::DomainNameAddress(ref domain_name, _) => {
+            Address::DomainNameAddress(domain_name, _) => {
                 for (tag, matcher) in self.domain_matchers.iter() {
                     if matcher.reverse_query(domain_name.as_str()) {
                         return tag.as_str();

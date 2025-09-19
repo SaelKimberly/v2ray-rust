@@ -90,7 +90,7 @@ impl Address {
         match self {
             Address::SocketAddress(SocketAddr::V4(..)) => 1 + 4 + 2,
             Address::SocketAddress(SocketAddr::V6(..)) => 1 + 8 * 2 + 2,
-            Address::DomainNameAddress(ref dmname, _) => 1 + 1 + dmname.len() + 2,
+            Address::DomainNameAddress(dmname, _) => 1 + 1 + dmname.len() + 2,
         }
     }
 
