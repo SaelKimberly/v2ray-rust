@@ -39,7 +39,6 @@ impl ToChainableStreamBuilder for VmessConfig {
         Box::new(VmessBuilder {
             vmess_option: VmessOption {
                 uuid: self.uuid,
-                alter_id: 0,
                 addr: addr.unwrap(),
                 security_num: self.security_num,
                 is_udp: false,
