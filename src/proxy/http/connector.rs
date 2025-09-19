@@ -1,5 +1,5 @@
-use http::uri::Scheme;
 use http::Uri;
+use http::uri::Scheme;
 use hyper::client::connect::{Connected, Connection};
 
 use std::collections::HashMap;
@@ -58,17 +58,20 @@ impl tower::Service<Uri> for Connector {
             match addr {
                 Ok(addr) => {
                     if is_tls_scheme {
-                        let err =
-                            Error::other("HTTP inbound target URI is tls and the client is not using CONNECT method.");
-                        log::error!("HTTP inbound target URI is tls and the client is not using CONNECT method. URI is: {}", uri);
+                        let err = Error::other(
+                            "HTTP inbound target URI is tls and the client is not using CONNECT method.",
+                        );
+                        log::error!(
+                            "HTTP inbound target URI is tls and the client is not using CONNECT method. URI is: {}",
+                            uri
+                        );
                         return Err(err);
                     }
                     let ob = router.match_addr(&addr);
                     let stream_builder = inner_map.get(ob).unwrap();
                     log::info!("routing {} to outbound:{}", addr, ob);
                     if stream_builder.is_blackhole() {
-                        let err =
-                            Error::other("HTTP inbound target URI is in blackhole");
+                        let err = Error::other("HTTP inbound target URI is in blackhole");
                         return Err(err);
                     }
                     let server = stream_builder.build_tcp(addr).await?;

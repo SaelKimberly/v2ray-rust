@@ -2,8 +2,8 @@ use crate::common::new_error;
 use crate::proxy::udp::ConnectedUdpSocket;
 use bytes::{Buf, BufMut, BytesMut};
 use std::fmt::{Debug, Formatter};
-use std::io::Error;
 use std::io::Cursor;
+use std::io::Error;
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, SocketAddrV6, ToSocketAddrs};
 use std::str::FromStr;
 use std::{fmt, io, vec};
@@ -152,9 +152,7 @@ impl Address {
                 let domain_buf = &addr_buf[..length];
                 let addr = match String::from_utf8(domain_buf.to_vec()) {
                     Ok(addr) => addr,
-                    Err(..) => {
-                        return Err(Error::other("invalid address encoding"))
-                    }
+                    Err(..) => return Err(Error::other("invalid address encoding")),
                 };
                 let mut port_buf = &addr_buf[length..length + 2];
                 let port = port_buf.get_u16();
@@ -163,9 +161,10 @@ impl Address {
             }
             _ => {
                 // Wrong Address Type . Socks5 only supports ipv4, ipv6 and domain name
-                Err(Error::other(
-                    format!("not supported address type {:#x}", addr_type),
-                ))
+                Err(Error::other(format!(
+                    "not supported address type {:#x}",
+                    addr_type
+                )))
             }
         }
     }

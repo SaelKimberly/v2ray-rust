@@ -1,5 +1,5 @@
 use crate::debug_log;
-use aes::{cipher::BlockDecrypt, cipher::BlockEncrypt, cipher::KeyInit, Aes128};
+use aes::{Aes128, cipher::BlockDecrypt, cipher::BlockEncrypt, cipher::KeyInit};
 use generic_array::GenericArray;
 use sha2::Digest;
 use sha2::{Sha224, Sha256};
@@ -15,9 +15,7 @@ pub const HW_BUFFER_SIZE: usize = 65_536;
 pub const AES_128_GCM_TAG_LEN: usize = 16;
 pub fn new_error<T: ToString>(message: T) -> io::Error {
     debug_log!("new error message:{}", message.to_string());
-    io::Error::other(
-        format!("Error: {}", message.to_string()),
-    )
+    io::Error::other(format!("Error: {}", message.to_string()))
 }
 
 pub trait BlockCipherHelper {
@@ -101,7 +99,7 @@ pub fn openssl_bytes_to_key(password: &[u8], key: &mut [u8]) {
 
 #[cfg(test)]
 mod tests {
-    use crate::common::{openssl_bytes_to_key, BlockCipherHelper};
+    use crate::common::{BlockCipherHelper, openssl_bytes_to_key};
     use crate::md5;
     use aes::Aes128;
 

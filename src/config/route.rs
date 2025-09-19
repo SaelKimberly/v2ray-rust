@@ -1,11 +1,11 @@
 use crate::common::new_error;
 use crate::proxy::Address;
-use domain_matcher::ac_automaton::HybridMatcher;
-use domain_matcher::mph::MphMatcher;
 use domain_matcher::DomainMatcher;
 use domain_matcher::MatchType;
+use domain_matcher::ac_automaton::HybridMatcher;
+use domain_matcher::mph::MphMatcher;
 
-use crate::config::{geoip, geosite, DomainRoutingRules, GeoIpRules, GeoSiteRules, IpRoutingRules};
+use crate::config::{DomainRoutingRules, GeoIpRules, GeoSiteRules, IpRoutingRules, geoip, geosite};
 use crate::debug_log;
 use bytes::Buf;
 use cidr_utils::cidr::IpCidr;

@@ -1,16 +1,16 @@
 mod connector;
-use http::{header, StatusCode};
+use http::{StatusCode, header};
 use hyper::server::conn::Http;
 use std::collections::HashMap;
 use std::io;
 use std::str::FromStr;
-use std::sync::atomic::AtomicU64;
 use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
 use tokio::net::TcpStream;
 
 use crate::common::net::{relay, relay_with_atomic_counter};
 use crate::common::new_error;
-use crate::config::{Router, COUNTER_MAP};
+use crate::config::{COUNTER_MAP, Router};
 use crate::debug_log;
 use crate::proxy::{Address, ChainStreamBuilder};
 use hyper::service::service_fn;

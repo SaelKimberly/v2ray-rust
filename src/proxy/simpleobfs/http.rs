@@ -1,11 +1,11 @@
 use crate::common::random_iv_or_salt;
 use crate::proxy::{Address, ProxyUdpStream, UdpRead, UdpWrite};
 use crate::{impl_async_read, impl_async_useful_traits, impl_async_write, impl_flush_shutdown};
-use base64::{engine::general_purpose::URL_SAFE, Engine as _};
+use base64::{Engine as _, engine::general_purpose::URL_SAFE};
 use futures_util::ready;
 use gentian::gentian;
 use hyper::Request;
-use rand::{thread_rng, Rng};
+use rand::{Rng, thread_rng};
 use std::io;
 use std::io::{Error, ErrorKind};
 use std::pin::Pin;

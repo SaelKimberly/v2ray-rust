@@ -1,7 +1,7 @@
-use crate::common::{new_error, HW_BUFFER_SIZE, LW_BUFFER_SIZE};
+use crate::common::{HW_BUFFER_SIZE, LW_BUFFER_SIZE, new_error};
 use crate::config::Router;
-use crate::proxy::socks::{auth_methods, response_code, socks_command, SOCKS_VERSION};
 use crate::proxy::ChainStreamBuilder;
+use crate::proxy::socks::{SOCKS_VERSION, auth_methods, response_code, socks_command};
 use actix_rt::task::JoinHandle;
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use futures_util::SinkExt;
@@ -18,8 +18,8 @@ use std::net::{IpAddr, SocketAddr};
 use std::sync::Arc;
 
 use crate::debug_log;
-use crate::proxy::udp::split_ext;
 use crate::proxy::Address;
+use crate::proxy::udp::split_ext;
 
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpStream, UdpSocket};
@@ -52,9 +52,10 @@ impl<S: AsyncReadExt + Unpin + AsyncWriteExt> Socks5Stream<S> {
         self.stream.read_exact(&mut header).await?;
         if header[0] != SOCKS_VERSION {
             self.stream.shutdown().await?;
-            return Err(Error::other(
-                format!("socks version {:#x} is not supported", header[0]),
-            ));
+            return Err(Error::other(format!(
+                "socks version {:#x} is not supported",
+                header[0]
+            )));
         } else {
             self.read_buf.reserve(header[1] as usize);
             let mut len = 0usize;
@@ -98,9 +99,7 @@ impl<S: AsyncReadExt + Unpin + AsyncWriteExt> Socks5Stream<S> {
                             let response = [1, response_code::FAILURE];
                             self.stream.write_all(&response).await?;
                             self.stream.shutdown().await?;
-                            return Err(Error::other(
-                                "socks5 client auth failure",
-                            ));
+                            return Err(Error::other("socks5 client auth failure"));
                         }
                     }
                 }
@@ -111,17 +110,16 @@ impl<S: AsyncReadExt + Unpin + AsyncWriteExt> Socks5Stream<S> {
                 response[1] = auth_methods::NO_METHODS;
                 self.stream.write_all(&response).await?;
                 self.stream.shutdown().await?;
-                return Err(Error::other(
-                    "socks5 client auth failure",
-                ));
+                return Err(Error::other("socks5 client auth failure"));
             }
         }
         let mut buf = [0u8; 3];
         self.stream.read_exact(&mut buf).await?;
         if buf[0] != SOCKS_VERSION {
-            return Err(Error::other(
-                format!("socks version {:#x} is not supported", buf[0]),
-            ));
+            return Err(Error::other(format!(
+                "socks version {:#x} is not supported",
+                buf[0]
+            )));
         }
         let address: Address = Address::read_from_stream(&mut self.stream).await?;
         //cmd
@@ -159,9 +157,10 @@ impl<S: AsyncReadExt + Unpin + AsyncWriteExt> Socks5Stream<S> {
                 ]);
                 address.write_to_buf(&mut self.read_buf);
                 self.stream.write_all(&self.read_buf).await?;
-                Err(Error::other(
-                    format!("socks command {:#x} is not supported", buf[1]),
-                ))
+                Err(Error::other(format!(
+                    "socks command {:#x} is not supported",
+                    buf[1]
+                )))
             }
         }
     }

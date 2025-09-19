@@ -8,16 +8,16 @@ mod to_chainable_builder;
 mod utils;
 
 pub use route::Router;
-pub use server_builder::{ConfigServerBuilder, COUNTER_MAP};
+pub use server_builder::{COUNTER_MAP, ConfigServerBuilder};
 pub use to_chainable_builder::ToChainableStreamBuilder;
 
 use crate::common::new_error;
 use crate::config::deserialize::{
-    default_backlog, default_grpc_path, default_http2_method, default_random_string,
+    EarlyDataUri, default_backlog, default_grpc_path, default_http2_method, default_random_string,
     default_relay_buffer_size, default_true, default_v2ray_geoip_path, default_v2ray_geosite_path,
     from_str_to_address, from_str_to_cipher_kind, from_str_to_grpc_path, from_str_to_http_method,
     from_str_to_option_address, from_str_to_path, from_str_to_security_num, from_str_to_sni,
-    from_str_to_uuid, from_str_to_ws_uri, EarlyDataUri,
+    from_str_to_uuid, from_str_to_ws_uri,
 };
 use crate::proxy::shadowsocks::aead_helper::CipherKind;
 use crate::proxy::shadowsocks::context::{BloomContext, SharedBloomContext};
@@ -349,9 +349,10 @@ impl Config {
 
     pub fn build_server(mut self) -> io::Result<ConfigServerBuilder> {
         if self.default_outbound.is_empty()
-            && let Some(name) = self.outbounds.first() {
-                self.default_outbound = name.tag.clone();
-            }
+            && let Some(name) = self.outbounds.first()
+        {
+            self.default_outbound = name.tag.clone();
+        }
         let inner_map = self.build_inner_map()?;
         if !inner_map.contains_key(&self.default_outbound) {
             return Err(new_error(
