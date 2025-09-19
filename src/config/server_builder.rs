@@ -53,7 +53,7 @@ impl ConfigServerBuilder {
         }
     }
     pub fn run(mut self) -> io::Result<()> {
-        let router = (&self.router).clone();
+        let router = self.router.clone();
         let enable_api_server = self.enable_api_server;
         if enable_api_server {
             COUNTER_MAP.get_or_init(|| {
@@ -89,9 +89,9 @@ impl ConfigServerBuilder {
                 map
             });
         }
-        let inner_map = (&self.inner_map).clone();
+        let inner_map = self.inner_map.clone();
         {
-            let api_inner_map = (&self.inner_map).clone();
+            let api_inner_map = self.inner_map.clone();
             actix_rt::System::new().block_on(async move {
                 if enable_api_server {
                     info!("api server listening on: {}", self.api_server_addr);

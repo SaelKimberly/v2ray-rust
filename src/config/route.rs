@@ -345,7 +345,7 @@ impl Router {
     pub fn match_socket_addr(&self, addr: &SocketAddr) -> &str {
         use std::net::IpAddr;
         let addr = addr.ip();
-        return match addr {
+        match addr {
             IpAddr::V4(e) => {
                 let ip4 = socket_addr_v4_to_u32(e);
                 let res = self.ip_matcher.match4(ip4);
@@ -364,7 +364,7 @@ impl Router {
                     res
                 }
             }
-        };
+        }
     }
     pub fn match_addr(&self, addr: &Address) -> &str {
         match addr {

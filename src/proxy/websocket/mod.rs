@@ -86,11 +86,11 @@ impl<T: ProxySteam> AsyncWrite for BinaryWsStream<T> {
         buf: &[u8],
     ) -> Poll<Result<usize, io::Error>> {
         ready!(Pin::new(&mut self.inner).poll_ready(cx))
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, format!("{:?}", e)))?;
+            .map_err(|e| io::Error::other(format!("{:?}", e)))?;
         let message = Message::Binary(buf.into());
         Pin::new(&mut self.inner)
             .start_send(message)
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, format!("{:?}", e)))?;
+            .map_err(|e| io::Error::other(format!("{:?}", e)))?;
         Poll::Ready(Ok(buf.len()))
     }
 
@@ -98,7 +98,7 @@ impl<T: ProxySteam> AsyncWrite for BinaryWsStream<T> {
         let inner = Pin::new(&mut self.inner);
         inner
             .poll_flush(cx)
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, format!("{:?}", e)))
+            .map_err(|e| io::Error::other(format!("{:?}", e)))
     }
 
     fn poll_shutdown(
@@ -107,14 +107,14 @@ impl<T: ProxySteam> AsyncWrite for BinaryWsStream<T> {
     ) -> Poll<Result<(), io::Error>> {
         debug_log!("shut down");
         ready!(Pin::new(&mut self.inner).poll_ready(cx))
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, format!("{:?}", e)))?;
+            .map_err(|e| io::Error::other(format!("{:?}", e)))?;
         let message = Message::Close(None);
         let _ = Pin::new(&mut self.inner).start_send(message);
 
         let inner = Pin::new(&mut self.inner);
         inner
             .poll_close(cx)
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, format!("close {:?}", e)))
+            .map_err(|e| io::Error::other(format!("close {:?}", e)))
     }
 }
 

@@ -100,7 +100,7 @@ impl LatencyService for ApiLatencyServer {
             let mut vec_fut = Vec::new();
             let test_url = request.get_ref().test_url.as_str();
             let addr = Address::from_str(test_url)
-                .map_err(|_| std::io::Error::new(std::io::ErrorKind::Other, "invalid test url"))?;
+                .map_err(|_| std::io::Error::other("invalid test url"))?;
             for (name, _) in self.inner_map.iter() {
                 let name = name.clone();
                 let addr = addr.clone();
@@ -113,13 +113,13 @@ impl LatencyService for ApiLatencyServer {
                     .await;
                     let duration = start.elapsed();
                     if timeout_stream.is_err() {
-                        return Ok::<(String, i64), std::io::Error>((name, -1i64));
+                        Ok::<(String, i64), std::io::Error>((name, -1i64))
                     } else {
                         let stream = timeout_stream?;
                         if stream.is_err() {
                             return Ok((name, -1i64));
                         }
-                        return Ok((name, duration.as_millis() as i64));
+                        Ok((name, duration.as_millis() as i64))
                     }
                 });
             }

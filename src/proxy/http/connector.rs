@@ -4,7 +4,7 @@ use hyper::client::connect::{Connected, Connection};
 
 use std::collections::HashMap;
 use std::future::Future;
-use std::io::{self, Error, ErrorKind};
+use std::io::{self, Error};
 use std::pin::Pin;
 use std::str::FromStr;
 
@@ -59,7 +59,7 @@ impl tower::Service<Uri> for Connector {
                 Ok(addr) => {
                     if is_tls_scheme {
                         let err =
-                            Error::new(ErrorKind::Other, "HTTP inbound target URI is tls and the client is not using CONNECT method.");
+                            Error::other("HTTP inbound target URI is tls and the client is not using CONNECT method.");
                         log::error!("HTTP inbound target URI is tls and the client is not using CONNECT method. URI is: {}", uri);
                         return Err(err);
                     }
@@ -68,7 +68,7 @@ impl tower::Service<Uri> for Connector {
                     log::info!("routing {} to outbound:{}", addr, ob);
                     if stream_builder.is_blackhole() {
                         let err =
-                            Error::new(ErrorKind::Other, "HTTP inbound target URI is in blackhole");
+                            Error::other("HTTP inbound target URI is in blackhole");
                         return Err(err);
                     }
                     let server = stream_builder.build_tcp(addr).await?;
@@ -79,7 +79,7 @@ impl tower::Service<Uri> for Connector {
                         "HTTP inbound target URI must be a valid address, but found: {}",
                         uri
                     );
-                    let err = Error::new(ErrorKind::Other, "URI must be a valid Address");
+                    let err = Error::other("URI must be a valid Address");
                     Err(err)
                 }
             }

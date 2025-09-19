@@ -348,11 +348,10 @@ impl Config {
     }
 
     pub fn build_server(mut self) -> io::Result<ConfigServerBuilder> {
-        if self.default_outbound.is_empty() {
-            if let Some(name) = self.outbounds.first() {
+        if self.default_outbound.is_empty()
+            && let Some(name) = self.outbounds.first() {
                 self.default_outbound = name.tag.clone();
             }
-        }
         let inner_map = self.build_inner_map()?;
         if !inner_map.contains_key(&self.default_outbound) {
             return Err(new_error(

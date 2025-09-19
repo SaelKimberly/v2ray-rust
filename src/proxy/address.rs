@@ -3,7 +3,7 @@ use crate::proxy::udp::ConnectedUdpSocket;
 use bytes::{Buf, BufMut, BytesMut};
 use std::fmt::{Debug, Formatter};
 use std::io::Error;
-use std::io::{Cursor, ErrorKind};
+use std::io::Cursor;
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, SocketAddrV6, ToSocketAddrs};
 use std::str::FromStr;
 use std::{fmt, io, vec};
@@ -32,7 +32,7 @@ impl AddressError {
 
 impl From<AddressError> for Error {
     fn from(e: AddressError) -> Self {
-        Error::new(ErrorKind::Other, format!("address error: {}", e.message))
+        Error::other(format!("address error: {}", e.message))
     }
 }
 impl Default for Address {
@@ -153,7 +153,7 @@ impl Address {
                 let addr = match String::from_utf8(domain_buf.to_vec()) {
                     Ok(addr) => addr,
                     Err(..) => {
-                        return Err(Error::new(ErrorKind::Other, "invalid address encoding"))
+                        return Err(Error::other("invalid address encoding"))
                     }
                 };
                 let mut port_buf = &addr_buf[length..length + 2];
@@ -163,8 +163,7 @@ impl Address {
             }
             _ => {
                 // Wrong Address Type . Socks5 only supports ipv4, ipv6 and domain name
-                Err(Error::new(
-                    ErrorKind::Other,
+                Err(Error::other(
                     format!("not supported address type {:#x}", addr_type),
                 ))
             }
@@ -294,21 +293,21 @@ impl Address {
     }
 
     pub async fn connect_tcp(&self) -> io::Result<TcpStream> {
-        return match self {
+        match self {
             Address::SocketAddress(addr) => TcpStream::connect(addr).await,
             Address::DomainNameAddress(host, port) => {
                 TcpStream::connect((host.as_str(), *port)).await
             }
-        };
+        }
     }
 
     pub async fn connect_udp(&self, socket: UdpSocket) -> io::Result<ConnectedUdpSocket> {
-        return match self {
+        match self {
             Address::SocketAddress(addr) => ConnectedUdpSocket::connect(socket, addr).await,
             Address::DomainNameAddress(host, port) => {
                 ConnectedUdpSocket::connect(socket, (host.as_str(), *port)).await
             }
-        };
+        }
     }
 }
 

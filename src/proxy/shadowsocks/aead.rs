@@ -100,7 +100,7 @@ impl DecryptedReader {
     fn decrypt_length(cipher: &mut AeadCipher, m: &mut [u8]) -> io::Result<usize> {
         let plen = {
             if !cipher.decrypt(m) {
-                return Err(io::Error::new(ErrorKind::Other, "invalid tag-in"));
+                return Err(io::Error::other("invalid tag-in"));
             }
 
             u16::from_be_bytes([m[0], m[1]]) as usize
