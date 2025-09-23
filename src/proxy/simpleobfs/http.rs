@@ -5,7 +5,7 @@ use base64::{Engine as _, engine::general_purpose::URL_SAFE};
 use futures_util::ready;
 use gentian::gentian;
 use hyper::Request;
-use rand::{Rng, thread_rng};
+use rand::{Rng, rng};
 use std::io;
 use std::io::{Error, ErrorKind};
 use std::pin::Pin;
@@ -85,7 +85,7 @@ where
         ctx: &mut Context<'_>,
         buf: &[u8],
     ) -> Poll<io::Result<usize>> {
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let mut encoded_buf = String::new();
         let mut salt = [0u8; 16];
         random_iv_or_salt(&mut salt);
@@ -94,7 +94,11 @@ where
             .uri(format!("http://{}", self.host))
             .header(
                 "User-Agent",
-                format!("curl/7.{}.{}", rng.gen_range(0..50), rng.gen_range(0..10)),
+                format!(
+                    "curl/7.{}.{}",
+                    rng.random_range(0..50),
+                    rng.random_range(0..10)
+                ),
             )
             .header("Upgrade", "websocket")
             .header("Connection", "Upgrade")

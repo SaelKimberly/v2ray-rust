@@ -4,9 +4,9 @@ fn main() {
     println!("cargo:rerun-if-changed=src/config/geosite.proto");
     println!("cargo:rerun-if-changed=src/config/geoip.proto");
     println!("cargo:rerun-if-changed=src/api/api.proto");
-    tonic_build::configure()
+    tonic_prost_build::configure()
         .build_client(false)
-        .compile(&["src/api/api.proto"], &["src/api/"])
+        .compile_protos(&["src/api/api.proto"], &["src/api/"])
         .unwrap();
     //tonic_build::compile_protos("src/api/api.proto").unwrap();
     let customize = Customize::default()

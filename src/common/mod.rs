@@ -1,6 +1,6 @@
 use crate::debug_log;
+use aes::cipher::generic_array::GenericArray;
 use aes::{Aes128, cipher::BlockDecrypt, cipher::BlockEncrypt, cipher::KeyInit};
-use generic_array::GenericArray;
 use sha2::Digest;
 use sha2::{Sha224, Sha256};
 use std::io;
@@ -21,6 +21,7 @@ pub fn new_error<T: ToString>(message: T) -> io::Error {
 pub trait BlockCipherHelper {
     fn new_with_slice(key: &[u8]) -> Self;
     fn encrypt_with_slice(&self, block: &mut [u8]);
+    #[allow(dead_code)]
     fn decrypt_with_slice(&self, block: &mut [u8]);
 }
 
@@ -63,7 +64,7 @@ pub fn random_iv_or_salt(iv_or_salt: &mut [u8]) {
     if iv_or_salt.is_empty() {
         return;
     }
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     loop {
         rand::Rng::fill(&mut rng, iv_or_salt);
         let is_zeros = iv_or_salt.iter().all(|&x| x == 0);

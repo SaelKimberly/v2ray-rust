@@ -1,4 +1,5 @@
 mod deserialize;
+mod domain_matcher;
 mod geoip;
 mod geosite;
 mod ip_trie;
@@ -33,11 +34,13 @@ use std::fs::File;
 use std::io;
 use std::io::Read;
 use std::path::PathBuf;
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock};
+
+use tokio_tungstenite::tungstenite::http;
 
 use uuid::Uuid;
-static SS_LOCAL_SHARED_CONTEXT: once_cell::sync::Lazy<SharedBloomContext> =
-    once_cell::sync::Lazy::new(|| Arc::new(BloomContext::new(true)));
+static SS_LOCAL_SHARED_CONTEXT: LazyLock<SharedBloomContext> =
+    LazyLock::new(|| Arc::new(BloomContext::new(true)));
 
 #[derive(Deserialize, Clone)]
 struct VmessConfig {
@@ -286,7 +289,7 @@ impl Config {
         let mut file = File::open(filename)?;
         let mut config_string = String::new();
         file.read_to_string(&mut config_string)?;
-        let config = toml::from_str(&config_string)?;
+        let config = toml::from_str(&config_string).map_err(io::Error::other)?;
         Ok(config)
     }
     fn build_inner_map<'a>(&'a self) -> io::Result<HashMap<String, ChainStreamBuilder>> {

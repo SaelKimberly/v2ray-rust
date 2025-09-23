@@ -1,9 +1,9 @@
 use crate::common::new_error;
+use crate::config::domain_matcher::DomainMatcher;
+use crate::config::domain_matcher::MatchType;
+use crate::config::domain_matcher::ac_automaton::HybridMatcher;
+use crate::config::domain_matcher::mph::MphMatcher;
 use crate::proxy::Address;
-use domain_matcher::DomainMatcher;
-use domain_matcher::MatchType;
-use domain_matcher::ac_automaton::HybridMatcher;
-use domain_matcher::mph::MphMatcher;
 
 use crate::config::{DomainRoutingRules, GeoIpRules, GeoSiteRules, IpRoutingRules, geoip, geosite};
 use crate::debug_log;
@@ -15,6 +15,7 @@ use regex::{RegexSet, RegexSetBuilder};
 use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io;
+use std::str::FromStr;
 
 use crate::config::utils::KeepInsertOrderMap;
 use protobuf::rt::WireType;
@@ -67,20 +68,19 @@ impl RouterBuilder {
 
     pub fn add_cidr_rules(&mut self, outbound_tag: &str, ip_rules: &[String]) {
         for rule in ip_rules {
-            if IpCidr::is_ip_cidr(rule) {
-                let cidr = IpCidr::from_str(rule).unwrap();
+            if let Ok(cidr) = IpCidr::from_str(rule.as_str()) {
                 match cidr {
                     IpCidr::V4(v4) => {
                         self.ip_matcher.put_v4(
-                            v4.get_prefix(),
-                            v4.get_bits(),
+                            v4.first_address().into(),
+                            v4.network_length(),
                             outbound_tag.to_string(),
                         );
                     }
                     IpCidr::V6(v6) => {
                         self.ip_matcher.put_v6(
-                            v6.get_prefix(),
-                            v6.get_bits(),
+                            v6.first_address().into(),
+                            v6.network_length(),
                             outbound_tag.to_string(),
                         );
                     }

@@ -64,7 +64,7 @@ pub(crate) fn build_dokodemo_door_listener(
                 )?;
             }
         } else {
-            socket.set_ip_transparent(door.tproxy)?;
+            socket.set_ip_transparent_v4(door.tproxy)?;
         }
     }
     let addr = door.addr.get_sock_addr().into();

@@ -1,6 +1,7 @@
 use http::Uri;
 use http::uri::Scheme;
-use hyper::client::connect::{Connected, Connection};
+use hyper_util::client::legacy::connect::{Connected, Connection};
+use hyper_util::rt::TokioIo;
 
 use std::collections::HashMap;
 use std::future::Future;
@@ -28,11 +29,11 @@ impl Connector {
 }
 
 impl tower::Service<Uri> for Connector {
-    type Response = BoxProxyStream;
+    type Response = TokioIo<BoxProxyStream>;
 
     type Error = io::Error;
 
-    type Future = Pin<Box<dyn Future<Output = io::Result<BoxProxyStream>> + Send>>;
+    type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>> + Send>>;
 
     fn poll_ready(
         &mut self,
@@ -75,7 +76,7 @@ impl tower::Service<Uri> for Connector {
                         return Err(err);
                     }
                     let server = stream_builder.build_tcp(addr).await?;
-                    Ok(server)
+                    Ok(TokioIo::new(server))
                 }
                 Err(_) => {
                     log::error!(

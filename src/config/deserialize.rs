@@ -2,14 +2,12 @@ use crate::common::new_error;
 use crate::proxy::shadowsocks::aead_helper::CipherKind;
 use crate::proxy::{Address, AddressError};
 use bytes::Buf;
-use http::Method;
-use http::uri::PathAndQuery;
 use serde::de::Error;
 use serde::{Deserialize, Deserializer};
 use std::env;
 use std::io::Cursor;
 use std::path::PathBuf;
-use tokio_tungstenite::tungstenite::http::Uri;
+use tokio_tungstenite::tungstenite::http::{Method, Uri, uri::PathAndQuery};
 use uuid::Uuid;
 
 pub(super) fn from_str_to_cipher_kind<'de, D>(deserializer: D) -> Result<CipherKind, D::Error>

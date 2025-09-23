@@ -7,10 +7,10 @@ use bytes::{Buf, BufMut, Bytes, BytesMut};
 
 use futures_util::ready;
 use h2::{RecvStream, SendStream};
-use http::{Request, Uri, Version};
 use log::error;
 use prost::encoding::decode_varint;
 use prost::encoding::encode_varint;
+use tokio_tungstenite::tungstenite::http::{self, Request, Uri, Version};
 
 use std::future::Future;
 use std::io;
@@ -52,7 +52,7 @@ macro_rules! grpc_build_tcp_impl {
     ($s:tt,$io:tt) => {
         let (mut client, h2) = h2::client::handshake($io).await.map_err(new_error)?;
         let req = $s.req()?;
-        let (resp, send_stream) = client.send_request(req, false).map_err(new_error)?;
+        let (resp, send_stream) = client.send_request(req.into(), false).map_err(new_error)?;
         tokio::spawn(async move {
             if let Err(e) = h2.await {
                 error!("http2 got err:{:?}", e);

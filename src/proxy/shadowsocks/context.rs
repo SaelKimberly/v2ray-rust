@@ -53,8 +53,8 @@ impl PingPongBloom {
 
         PingPongBloom {
             blooms: [
-                Bloom::new_for_fp_rate(item_count, fp_p),
-                Bloom::new_for_fp_rate(item_count, fp_p),
+                Bloom::new_for_fp_rate(item_count, fp_p).unwrap(),
+                Bloom::new_for_fp_rate(item_count, fp_p).unwrap(),
             ],
             bloom_count: [0, 0],
             item_count,

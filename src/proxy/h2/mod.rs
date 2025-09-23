@@ -6,7 +6,6 @@ use async_trait::async_trait;
 use bytes::{Bytes, BytesMut};
 use futures_util::ready;
 use h2::{RecvStream, SendStream};
-use http::{Request, Uri, Version};
 use log::error;
 use rand::random;
 use std::collections::HashMap;
@@ -15,12 +14,13 @@ use std::io::{Error, ErrorKind};
 use std::pin::Pin;
 use std::task::{Context, Poll};
 use tokio::io::{AsyncRead, AsyncWrite};
+use tokio_tungstenite::tungstenite::http::{self, Method, Request, Uri, Version};
 
 #[derive(Clone)]
 pub struct Http2StreamBuilder {
     pub hosts: Vec<String>,
     pub headers: HashMap<String, String>,
-    pub method: http::Method,
+    pub method: Method,
     pub path: http::uri::PathAndQuery,
 }
 
@@ -28,7 +28,7 @@ impl Http2StreamBuilder {
     pub fn new(
         hosts: Vec<String>,
         headers: HashMap<String, String>,
-        method: http::Method,
+        method: Method,
         path: http::uri::PathAndQuery,
     ) -> Self {
         Self {
@@ -40,7 +40,7 @@ impl Http2StreamBuilder {
     }
 
     fn req(&self) -> io::Result<Request<()>> {
-        let uri_idx = random::<usize>() % self.hosts.len();
+        let uri_idx = (random::<u64>() as usize) % self.hosts.len();
         let uri: Uri = {
             Uri::builder()
                 .scheme("https")
